@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101110">
+  <meta name="description" content="A little less ordinary. Explore FORM, an interactive 3D sculpture playground by Chidera Emmanuel. Shape it, spin it, make it yours.">
+  <meta property="og:title" content="FORM — A little less ordinary">
+  <meta property="og:description" content="Three sculptural forms. Four expressive finishes. An interactive playground in three dimensions.">
+  <meta property="og:type" content="website">
+  <title>FORM — A little less ordinary</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#studio">Skip to the sculpture studio</a>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="diagonal" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></symbol>
+    <symbol id="download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4"/></symbol>
+    <symbol id="expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+    <symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+    <symbol id="reset" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></symbol>
+    <symbol id="grid" viewBox="0 0 24 24"><path d="m12 3 9 5v8l-9 5-9-5V8Zm0 0v18M3 8l9 5 9-5M3 16l9-5 9 5"/></symbol>
+    <symbol id="shuffle" viewBox="0 0 24 24"><path d="M3 6h3l12 12h3m-5-4 5 4-5 4M3 18h3l4-4m4-4 4-4h3m-5-4 5 4-5 4"/></symbol>
+    <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="link" viewBox="0 0 24 24"><path d="m10 14 4-4m-5 7-2 2a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0m3-1 2-2a4 4 0 0 1 6 6l-5 5a4 4 0 0 1-6 0" transform="translate(1 0) scale(.92)"/></symbol>
+  </defs></svg>
+  <header class="site-header">
+    <a class="wordmark" href="./" aria-label="FORM home">FORM<span>.</span></a>
+    <div class="header-caption">A DIGITAL OBJECT STUDIO</div>
+    <nav aria-label="Main navigation">
+      <button class="text-button about-trigger">The experiment <span class="small-dot"></span></button>
+      <a class="source-link" href="https://github.com/ChideraEmmanuelCE/form-3d-studio" target="_blank" rel="noreferrer">View source <svg><use href="#diagonal"/></svg></a>
+    </nav>
+  </header>
+
+  <main id="studio">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-light"></span> AN EXPERIMENT IN THREE DIMENSIONS</p>
+        <h1 id="hero-heading">A little<br>less <span class="serif">ordinary.</span></h1>
+        <p class="intro">No rules. Just a little curiosity.<br>Shape it. Spin it. Make it yours.</p>
+        <a class="primary-button" href="#controls">Enter the playground <svg><use href="#arrow"/></svg></a>
+        <div class="hero-footnote"><span class="vertical-line"></span><p>Real-time sculpture.<br>Endless perspectives.</p></div>
+      </div>
+
+      <div class="stage" id="stage">
+        <div class="stage-top"><span><span class="accent">LIVE</span> / INTERACTIVE OBJECT</span><span id="figure-index">FIG. 001</span></div>
+        <div class="orbit-guide" aria-hidden="true"></div>
+        <div class="crosshair crosshair-one" aria-hidden="true">+</div><div class="crosshair crosshair-two" aria-hidden="true">+</div>
+        <div class="object-shadow" aria-hidden="true"></div>
+        <canvas id="sculpture" tabindex="0" role="img" aria-label="Interactive Knot sculpture in Ultraviolet. Drag to rotate, pinch to zoom, or use arrow keys and plus or minus." aria-describedby="canvas-help"></canvas>
+        <div class="loading" id="loading"><span></span><p>Finding a new perspective…</p></div>
+        <div class="fallback" id="fallback" hidden><div class="fallback-orbit" aria-hidden="true"></div><h2>A different perspective.</h2><p id="fallback-message">Your browser couldn't start 3D. Try enabling hardware acceleration or opening this page in Safari, Chrome, or Firefox.</p><button class="primary-button" id="retry">Try again <svg><use href="#reset"/></svg></button></div>
+        <div class="stage-bottom"><p id="canvas-help"><span class="drag-icon" aria-hidden="true">↔</span> Drag to rotate <span class="help-divider">/</span> Pinch to zoom</p><button class="icon-button" id="immersive" aria-label="Open immersive view" title="Immersive view"><svg><use href="#expand"/></svg></button></div>
+        <div class="immersive-heading" aria-hidden="true">FORM<span>.</span></div>
+      </div>
+    </section>
+
+    <section class="control-deck" id="controls" aria-label="Sculpture controls">
+      <div class="form-selector control-group">
+        <p class="control-label"><span>01</span> CHOOSE YOUR FORM</p>
+        <div class="shape-options" role="group" aria-label="Sculpture shape">
+          <button class="shape-button selected" data-shape="knot" aria-pressed="true"><svg viewBox="0 0 44 38" aria-hidden="true"><path d="M23 5c-9-4-15 4-10 11L25 31c5 6 15 1 12-6L24 7c-4-6-14-1-13 6l3 17c1 8 13 9 15 1l5-19c3-8-7-13-12-7L7 23c-6 7 3 16 10 10L32 19"/></svg><span>Knot</span><span class="shape-number">01</span></button>
+          <button class="shape-button" data-shape="bloom" aria-pressed="false"><svg viewBox="0 0 44 38" aria-hidden="true"><path d="M22 4c5-8 12 1 10 6 10-2 12 9 5 12 7 6 0 14-7 11-2 8-13 8-15 0-8 3-15-5-8-11C0 17 4 8 13 10 10 3 18-4 22 4Z"/><circle cx="22" cy="19" r="8"/></svg><span>Bloom</span><span class="shape-number">02</span></button>
+          <button class="shape-button" data-shape="orbit" aria-pressed="false"><svg viewBox="0 0 44 38" aria-hidden="true"><ellipse cx="22" cy="19" rx="18" ry="13" transform="rotate(-35 22 19)"/><ellipse cx="22" cy="19" rx="10" ry="6" transform="rotate(-35 22 19)"/></svg><span>Orbit</span><span class="shape-number">03</span></button>
+        </div>
+      </div>
+      <div class="finish-selector control-group">
+        <p class="control-label"><span>02</span> PICK A FINISH</p>
+        <div class="finish-row"><div class="swatches" role="group" aria-label="Sculpture finish">
+          <button class="swatch selected violet" data-palette="violet" aria-label="Ultraviolet finish" aria-pressed="true" title="Ultraviolet"></button>
+          <button class="swatch gold" data-palette="gold" aria-label="Liquid gold finish" aria-pressed="false" title="Liquid gold"></button>
+          <button class="swatch pearl" data-palette="pearl" aria-label="Porcelain finish" aria-pressed="false" title="Porcelain"></button>
+          <button class="swatch ocean" data-palette="ocean" aria-label="Deep ocean finish" aria-pressed="false" title="Deep ocean"></button>
+        </div><span id="finish-name">Ultraviolet</span></div>
+      </div>
+      <div class="motion-selector control-group">
+        <p class="control-label"><span>03</span> MAKE IT YOURS</p>
+        <div class="tool-buttons">
+          <button class="icon-button" id="motion" aria-label="Pause rotation" aria-pressed="false" title="Pause rotation"><svg><use href="#pause"/></svg></button>
+          <button class="icon-button" id="wireframe" aria-label="Show wireframe" aria-pressed="false" title="Toggle wireframe"><svg><use href="#grid"/></svg></button>
+          <button class="icon-button" id="reset-view" aria-label="Reset view" title="Reset view"><svg><use href="#reset"/></svg></button>
+          <button class="icon-button" id="zoom-out" aria-label="Zoom out" title="Zoom out"><svg><use href="#minus"/></svg></button>
+          <button class="icon-button" id="zoom-in" aria-label="Zoom in" title="Zoom in"><svg><use href="#plus"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="object-info" aria-labelledby="object-name">
+      <div class="object-title"><span id="object-number">001</span><div><h2 id="object-name">The beautiful loop.</h2><p id="object-description">One continuous path. A thousand ways to look at it.</p></div></div>
+      <div class="object-actions"><button class="text-button" id="surprise"><svg><use href="#shuffle"/></svg> Surprise me</button><button class="text-button" id="share"><svg><use href="#link"/></svg> Share form</button><button class="save-button" id="save"><svg><use href="#download"/></svg> Save image</button></div>
+    </section>
+
+    <section class="closing-note"><p>Made for the joy <span class="serif">of playing.</span></p><button class="text-button about-trigger">A small idea, in another dimension <svg><use href="#diagonal"/></svg></button></section>
+  </main>
+
+  <footer><span>DESIGNED & BUILT BY <a href="https://github.com/ChideraEmmanuelCE" target="_blank" rel="noreferrer">CHIDERA EMMANUEL</a></span><span class="footer-center">STAY CURIOUS.</span><span>FORM STUDIO © 2026</span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="about-dialog" aria-labelledby="about-heading"><div class="dialog-top"><span class="wordmark">FORM<span>.</span></span><button class="icon-button" id="close-about" aria-label="Close about"><svg><use href="#close"/></svg></button></div><p class="eyebrow">A SMALL EXPERIMENT</p><h2 id="about-heading">Curiosity,<br><span class="serif">with a little depth.</span></h2><p>FORM is a digital sculpture playground by Chidera Emmanuel. Three mathematical forms become objects you can turn, colour, and see in your own way.</p><p>There is nothing to sign up for and no right way to play. Your images are created on your device.</p><div class="instructions"><h3>Take it for a spin</h3><p><strong>Touch or mouse</strong> — drag the sculpture to rotate. Pinch with two fingers to zoom, or use the + and − controls.</p><p><strong>Keyboard</strong> — focus the sculpture, then use the arrow keys to rotate, + / − to zoom, and 0 to reset. Press Escape to leave immersive view.</p><p><strong>Make it yours</strong> — try a new shape, change the finish, or reveal the wireframe. Save a PNG or share a link to your shape and finish.</p></div><a class="primary-button" href="https://github.com/ChideraEmmanuelCE/form-3d-studio" target="_blank" rel="noreferrer">Explore the code <svg><use href="#diagonal"/></svg></a></dialog>
+  <dialog id="share-dialog" aria-labelledby="share-heading"><div class="dialog-top"><h2 id="share-heading">Share your form</h2><button class="icon-button" id="close-share" aria-label="Close sharing"><svg><use href="#close"/></svg></button></div><p>This link remembers your shape and finish.</p><label for="share-url">Link to your form</label><input id="share-url" type="text" readonly><p class="small-print">Select and copy the link above.</p></dialog>
+  <noscript><div class="no-script">FORM needs JavaScript for its interactive 3D studio. Enable JavaScript to rotate, customise, and save your sculpture.</div></noscript>
+</body>
+</html>

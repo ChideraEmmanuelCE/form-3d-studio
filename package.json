@@ -1,0 +1,8 @@
+{
+  "name": "form-3d-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An interactive sculpture playground built with dependency-free WebGL.",
+  "scripts": { "test": "node --test tests/*.test.js", "check": "node --check app.js && node --check renderer.js && node --check geometry.js" }
+}
