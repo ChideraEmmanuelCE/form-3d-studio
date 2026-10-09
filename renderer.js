@@ -57,11 +57,12 @@ export class SculptureRenderer {
   constructor(canvas, {shape='knot',palette='violet',onActivity=()=>{}}={}) {
     this.canvas=canvas; this.onActivity=onActivity;
     this.gl=canvas.getContext('webgl',{alpha:true,antialias:true,preserveDrawingBuffer:false,powerPreference:'low-power'});
-    if (!this.gl) throw new Error('WebGL is unavailable');
+    this.software=!this.gl;
+    if(this.software){this.context2d=canvas.getContext('2d');if(!this.context2d)throw new Error('Canvas rendering is unavailable');}
     this.shape=shape; this.palette=palette; this.x=-.24; this.y=-.28; this.z=.25;
     this.distance=5.2; this.wireframe=false; this.running=true; this.visible=true; this.dragging=false;
     this.last=0; this.frame=0; this.pointers=new Map(); this.bindings=[];
-    this.init(); this.setShape(shape); this.resize();
+    if(!this.software)this.init(); this.setShape(shape); this.resize();
     this.observer=new ResizeObserver(()=>this.resize()); this.observer.observe(canvas);
     this.bindInput(); this.draw(); this.tick=this.tick.bind(this); this.frame=requestAnimationFrame(this.tick);
   }
@@ -86,7 +87,8 @@ export class SculptureRenderer {
   setShape(shape) {
     const gl=this.gl; this.shape=shape;
     const small=matchMedia('(max-width: 700px)').matches;
-    const mesh=createGeometry(shape,small?144:192,48);
+    const mesh=createGeometry(shape,this.software?80:(small?144:192),this.software?24:48);
+    if(this.software){this.mesh=mesh;this.count=mesh.triangles.length;this.draw();return;}
     for(const key of ['vertices','normals','triangles','lines']) {
       const target=key==='vertices'||key==='normals'?gl.ARRAY_BUFFER:gl.ELEMENT_ARRAY_BUFFER;
       gl.bindBuffer(target,this.buffers[key]); gl.bufferData(target,mesh[key],gl.STATIC_DRAW);
@@ -95,12 +97,13 @@ export class SculptureRenderer {
   }
   setPalette(palette) {this.palette=palette; this.draw();}
   resize() {
-    const rect=this.canvas.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,1.75);
+    const rect=this.canvas.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,this.software?1.25:1.75);
     const width=Math.max(1,Math.round(rect.width*dpr)), height=Math.max(1,Math.round(rect.height*dpr));
     if(this.canvas.width!==width||this.canvas.height!==height){this.canvas.width=width;this.canvas.height=height;}
     this.draw();
   }
   draw() {
+    if(this.software){this.drawSoftware();return;}
     const gl=this.gl;
     if(!this.count||gl.isContextLost())return;
     gl.viewport(0,0,this.canvas.width,this.canvas.height); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);
@@ -116,7 +119,50 @@ export class SculptureRenderer {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,this.buffers[this.wireframe?'lines':'triangles']);
     gl.drawElements(this.wireframe?gl.LINES:gl.TRIANGLES,this.wireframe?this.lineCount:this.count,gl.UNSIGNED_SHORT,0);
   }
+  drawSoftware() {
+    if(!this.mesh)return;
+    const ctx=this.context2d,w=this.canvas.width,h=this.canvas.height,m=rotationMatrix(this.x,this.y,this.z);
+    const distance=this.distance*Math.max(1,h/w),scale=h*.5/Math.tan(Math.PI/8),mesh=this.mesh;
+    ctx.clearRect(0,0,w,h);
+    const transformed=[],normals=[],screen=[];
+    const rotate=(a,i)=>[m[0]*a[i]+m[4]*a[i+1]+m[8]*a[i+2],m[1]*a[i]+m[5]*a[i+1]+m[9]*a[i+2],m[2]*a[i]+m[6]*a[i+1]+m[10]*a[i+2]];
+    for(let i=0;i<mesh.vertices.length;i+=3){
+      const p=rotate(mesh.vertices,i);transformed.push(p);normals.push(rotate(mesh.normals,i));
+      const perspective=scale/(distance-p[2]);screen.push([w/2+p[0]*perspective,h/2-p[1]*perspective]);
+    }
+    const colors=FINISHES[this.palette];
+    if(this.wireframe){
+      ctx.strokeStyle=`rgb(${colors.b.map(v=>Math.round(v*220+25)).join(',')})`;ctx.lineWidth=.7;
+      ctx.beginPath();for(let i=0;i<mesh.lines.length;i+=2){const a=screen[mesh.lines[i]],b=screen[mesh.lines[i+1]];ctx.moveTo(...a);ctx.lineTo(...b);}ctx.stroke();return;
+    }
+    const faces=[];
+    for(let i=0;i<mesh.triangles.length;i+=6){
+      const ids=[mesh.triangles[i],mesh.triangles[i+1],mesh.triangles[i+4],mesh.triangles[i+2]];
+      faces.push({ids,z:ids.reduce((sum,id)=>sum+transformed[id][2],0)/4});
+    }
+    faces.sort((a,b)=>a.z-b.z);
+    const unit=a=>{const d=Math.hypot(...a)||1;return a.map(v=>v/d);}, dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+    const light=unit([-3,4.5,5]),rim=unit([4,-1,2]);
+    for(const face of faces){
+      const p=[0,0,0],n=[0,0,0];for(const id of face.ids)for(let j=0;j<3;j++){p[j]+=transformed[id][j]/4;n[j]+=normals[id][j]/4;}
+      let normal=unit(n);const view=unit([-p[0],-p[1],distance-p[2]]);
+      if(dot(normal,view)<0)normal=normal.map(v=>-v);
+      const facing=Math.max(0,dot(normal,view)),fresnel=Math.pow(1-facing,2.2),diffuse=Math.max(0,dot(normal,light)),secondary=Math.max(0,dot(normal,rim));
+      const mix=.5+.5*Math.sin(normal[1]*3.8+normal[0]*2.8+facing*3);
+      const half=unit(light.map((v,i)=>v+view[i])),sideHalf=unit(rim.map((v,i)=>v+view[i]));
+      const spec=Math.pow(Math.max(0,dot(normal,half)),72)*.94+Math.pow(Math.max(0,dot(normal,half)),15)*.23;
+      const sideSpec=Math.pow(Math.max(0,dot(normal,sideHalf)),52)*.75;
+      const color=colors.a.map((a,i)=>{
+        const b=colors.b[i],base=a*(1-mix)+b*mix;
+        const value=base*(.15+diffuse*.70+secondary*.23)+[.95,.91,1][i]*spec+b*sideSpec+(b*.75+[.8,.82,1][i]*.25)*fresnel*.72;
+        return Math.round(clamp(Math.pow(Math.max(0,value),.83)*255,0,255));
+      });
+      ctx.fillStyle=`rgb(${color.join(',')})`;ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=.7;
+      ctx.beginPath();face.ids.forEach((id,index)=>index?ctx.lineTo(...screen[id]):ctx.moveTo(...screen[id]));ctx.closePath();ctx.fill();ctx.stroke();
+    }
+  }
   tick(now) {
+    if(this.software&&this.last&&now-this.last<50){this.frame=requestAnimationFrame(this.tick);return;}
     const delta=Math.min((now-(this.last||now))/1000,.04);this.last=now;
     if(this.running&&this.visible&&!document.hidden&&!this.dragging) {this.y+=delta*.17; this.z+=delta*.024;this.draw();}
     this.frame=requestAnimationFrame(this.tick);
@@ -159,5 +205,5 @@ export class SculptureRenderer {
     ctx.textAlign='right';ctx.fillText('AN EXPERIMENT IN THREE DIMENSIONS',1520,1125);
     return new Promise((resolve,reject)=>result.toBlob(blob=>blob?resolve(blob):reject(new Error('Could not export image')),'image/png'));
   }
-  destroy() {cancelAnimationFrame(this.frame);this.observer.disconnect();this.intersection.disconnect();this.bindings.forEach(fn=>fn());Object.values(this.buffers).forEach(b=>this.gl.deleteBuffer(b));this.gl.deleteProgram(this.program);}
+  destroy() {cancelAnimationFrame(this.frame);this.observer.disconnect();this.intersection.disconnect();this.bindings.forEach(fn=>fn());if(this.gl){Object.values(this.buffers).forEach(b=>this.gl.deleteBuffer(b));this.gl.deleteProgram(this.program);}}
 }

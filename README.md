@@ -12,7 +12,7 @@ A responsive, interactive 3D sculpture playground by **Chidera Emmanuel**. Built
 - Immersive view with keyboard focus management and Escape to close.
 - Export a branded 1600 × 1200 PNG, generated entirely on the visitor's device.
 - Share a URL that remembers the selected sculpture and finish.
-- Responsive layouts, reduced-motion support, keyboard controls, and a graceful WebGL fallback.
+- Responsive layouts, reduced-motion support, keyboard controls, and a complete software 3D renderer when WebGL is unavailable.
 - The renderer caps device pixel ratio and uses a smaller mesh on mobile. Animation rendering pauses when the scene is offscreen or the tab is hidden.
 
 ## Run locally
@@ -61,7 +61,7 @@ Publish from **Settings → Pages → Deploy from a branch → main → / (root)
 
 ## Privacy and compatibility
 
-No analytics, cookies, sign-in, or data collection. Shape and finish are stored only in the URL fragment. Images are generated locally. The optional font stylesheet is requested from Google Fonts. A WebGL-capable browser is needed for 3D; the page explains how to retry if it is unavailable. Native fullscreen is not required, including on iPhone.
+No analytics, cookies, sign-in, or data collection. Shape and finish are stored only in the URL fragment. Images are generated locally. The optional font stylesheet is requested from Google Fonts. WebGL provides smooth shading on supported browsers; an automatic Canvas 2D renderer projects the same 3D surfaces in browsers without GPU support, using a smaller mesh and lower frame rate. All sculpture controls and PNG export remain available in either mode. Native fullscreen is not required, including on iPhone.
 
 ## License
 

@@ -104,7 +104,7 @@ $('#save').addEventListener('click',async()=>{
   }catch(error){console.error('FORM export:',error);notify('Could not save this image. Please try again.');}
   finally{button.disabled=false;}
 });
-window.addEventListener('hashchange',()=>{const view=parseView(location.hash);state.shape=view.shape;state.palette=view.palette;renderer?.setShape(state.shape);renderer?.setPalette(state.palette);updateLabels();});
+window.addEventListener('hashchange',()=>{if(location.hash&&!location.hash.includes('='))return;const view=parseView(location.hash);state.shape=view.shape;state.palette=view.palette;renderer?.setShape(state.shape);renderer?.setPalette(state.palette);updateLabels();});
 $('#sculpture').addEventListener('webglcontextlost',e=>{e.preventDefault();if(renderer)renderer.running=false;fail('The 3D scene was interrupted. Tap Try again, or wait a moment for your browser to restore it.');});
 $('#sculpture').addEventListener('webglcontextrestored',boot);
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{state.paused=e.matches;if(renderer)renderer.running=!state.paused;updateLabels();});
