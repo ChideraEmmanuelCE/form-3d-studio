@@ -1,4 +1,4 @@
-import {SculptureRenderer, FINISHES} from './renderer.js';
+import {SculptureRenderer, FINISHES} from './renderer.js?v=1.1.0';
 import {SHAPES, PALETTES, parseView} from './geometry.js';
 
 const $ = selector => document.querySelector(selector);

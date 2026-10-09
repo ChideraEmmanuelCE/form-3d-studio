@@ -1,6 +1,6 @@
 {
   "name": "form-3d-studio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "An interactive sculpture playground built with dependency-free WebGL.",
